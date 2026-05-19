@@ -1,0 +1,159 @@
+[
+  {
+    "video_id": "V01",
+    "slide_id": "S01",
+    "act": "第一幕·始发站",
+    "purpose": "始发站全景动画：蒸汽喷出+小旗飘动+小朋友跳动",
+    "duration_seconds": 8,
+    "loop": true,
+    "aspect_ratio": "16:9",
+    "resolution": "2560x1440",
+    "fallback_static": "IMG-01",
+    "html_slot_id": "video-slot-s01",
+    "integration_note": "替换 #s01 .scene-img，使用 <video autoplay loop muted playsinline> 标签",
+    "animation_layers": [
+      "steam-particles: 烟囱蒸汽粒子，白色半透明圆形，向上飘散，3s循环",
+      "flag-sway: 小旗左右摆动，±8度，2s循环",
+      "kids-bounce: 小朋友群像轻微上下跳动，4px振幅，1.5s循环",
+      "sign-flash: 始发站站牌文字闪烁一次，0.5s延迟"
+    ],
+    "music_cue": "BGM-01",
+    "transition_in": "fade-from-black 0.5s",
+    "transition_out": "dissolve 0.35s"
+  },
+  {
+    "video_id": "V02",
+    "slide_id": "S02",
+    "act": "第二幕·火车开动",
+    "purpose": "火车行驶侧面动画：车轮旋转+背景视差滚动+烟雾向后飘",
+    "duration_seconds": 8,
+    "loop": true,
+    "aspect_ratio": "16:9",
+    "resolution": "2560x1440",
+    "fallback_static": "IMG-02",
+    "html_slot_id": "video-slot-s02",
+    "integration_note": "替换 #s02 .scene-img，背景层单独视差滚动",
+    "animation_layers": [
+      "wheel-rotate: 车轮持续旋转，360deg/s，线性循环",
+      "bg-parallax: 背景树木云朵向左滚动，速度1.5x，无缝循环",
+      "smoke-drift: 烟囱烟雾向右后方飘散，3s循环",
+      "kids-wave: 车窗小朋友招手，2s循环"
+    ],
+    "music_cue": "BGM-02",
+    "transition_in": "dissolve 0.35s",
+    "transition_out": "dissolve 0.35s"
+  },
+  {
+    "video_id": "V03",
+    "slide_id": "S03",
+    "act": "第三幕·森林站",
+    "purpose": "森林站到达：小鸟扇翅飞舞+小花开合+树叶光斑移动",
+    "duration_seconds": 8,
+    "loop": true,
+    "aspect_ratio": "16:9",
+    "resolution": "2560x1440",
+    "fallback_static": "IMG-03",
+    "html_slot_id": "video-slot-s03",
+    "integration_note": "替换 #s03 .scene-img，光斑层叠加在视频上方",
+    "animation_layers": [
+      "bird-flap: 小鸟翅膀上下扇动，弧线飞行路径，3s循环",
+      "flower-bloom: 小花一开一合，2s循环",
+      "tree-sway: 小树轻微摇摆，±5度，2.5s循环",
+      "light-dapple: 树叶光斑缓慢移动，4s循环",
+      "kids-nod: 车窗小朋友点头微笑，2s循环"
+    ],
+    "music_cue": "BGM-03",
+    "transition_in": "dissolve 0.35s",
+    "transition_out": "dissolve 0.35s"
+  },
+  {
+    "video_id": "V04",
+    "slide_id": "S04",
+    "act": "第四幕·告别森林站",
+    "purpose": "车窗内视角：森林站逐渐向左缩小远去淡出，约5s完成一次循环",
+    "duration_seconds": 8,
+    "loop": true,
+    "aspect_ratio": "16:9",
+    "resolution": "2560x1440",
+    "fallback_static": "IMG-04",
+    "html_slot_id": "video-slot-s04",
+    "integration_note": "替换 #s04 .scene-img，窗外景物单独图层做缩放+位移动画",
+    "animation_layers": [
+      "station-recede: 森林站景物向左缩小(scale 1→0.6)并淡出，5s，可循环",
+      "girl-gaze: 小女孩眼珠缓缓转向窗外，1s，非循环",
+      "window-shimmer: 车窗玻璃反光微微闪烁，3s循环",
+      "motion-blur: 窗外背景轻微运动模糊"
+    ],
+    "music_cue": "BGM-04",
+    "transition_in": "dissolve 0.35s",
+    "transition_out": "dissolve 0.35s"
+  },
+  {
+    "video_id": "V05",
+    "slide_id": "S05",
+    "act": "第五幕·动物乐园站",
+    "purpose": "动物乐园热闹群像：动物动作循环+小朋友拍手节奏同步",
+    "duration_seconds": 10,
+    "loop": true,
+    "aspect_ratio": "16:9",
+    "resolution": "2560x1440",
+    "fallback_static": "IMG-05",
+    "html_slot_id": "video-slot-s05",
+    "integration_note": "替换 #s05 .scene-img，拍手节奏与BGM-05 BPM=120同步",
+    "animation_layers": [
+      "dog-wag: 小狗尾巴左右摇摆，0.3s循环，BPM同步",
+      "cat-stretch: 小猫伸懒腰，2s循环",
+      "bee-zigzag: 小蜜蜂Z字形飞舞，2s循环",
+      "butterfly-flutter: 蝴蝶上下飞舞，1.5s循环",
+      "clap-sync: 小朋友和动物拍手，0.5s循环，BPM=120",
+      "notes-flash: 站牌音符闪烁，0.5s循环"
+    ],
+    "music_cue": "BGM-05",
+    "transition_in": "dissolve 0.35s",
+    "transition_out": "dissolve 0.35s"
+  },
+  {
+    "video_id": "V06",
+    "slide_id": "S06",
+    "act": "第六幕·夕阳归途",
+    "purpose": "夕阳归途：光晕呼吸效果+天空颜色渐变+火车平稳移动",
+    "duration_seconds": 8,
+    "loop": true,
+    "aspect_ratio": "16:9",
+    "resolution": "2560x1440",
+    "fallback_static": "IMG-06",
+    "html_slot_id": "video-slot-s06",
+    "integration_note": "替换 #s06 .scene-img，天空渐变层叠加在视频上方",
+    "animation_layers": [
+      "sun-breathe: 夕阳光晕呼吸式放大缩小，4s循环",
+      "train-drift: 火车向左平稳移动，8s循环",
+      "smoke-soft: 烟雾轻柔向后飘散，3s循环",
+      "sky-gradient: 天空从橙黄渐变到粉紫，6s循环"
+    ],
+    "music_cue": "BGM-06",
+    "transition_in": "dissolve 0.35s",
+    "transition_out": "dissolve 0.35s"
+  },
+  {
+    "video_id": "V07",
+    "slide_id": "S07",
+    "act": "第七幕·学校站",
+    "purpose": "学校站收尾：小朋友挥手+星星闪烁+火车头灯淡出+心形光斑放大",
+    "duration_seconds": 10,
+    "loop": false,
+    "aspect_ratio": "16:9",
+    "resolution": "2560x1440",
+    "fallback_static": "IMG-07",
+    "html_slot_id": "video-slot-s07",
+    "integration_note": "替换 #s07 .scene-img，心形光斑为独立图层，4s延迟后出现",
+    "animation_layers": [
+      "wave-goodbye: 小朋友互相挥手道别，1.5s循环",
+      "stars-twinkle: 站牌星星闪烁，1.2s循环，随机延迟",
+      "headlight-fade: 火车头灯呼吸式淡出，3s，非循环",
+      "heart-bloom: 心形光斑从中心放大，4s延迟后出现，3s动画，非循环"
+    ],
+    "music_cue": "BGM-07",
+    "transition_in": "dissolve 0.35s",
+    "transition_out": "fade-to-black 1.5s"
+  }
+]

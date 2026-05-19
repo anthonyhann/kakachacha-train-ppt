@@ -1,0 +1,974 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>咔嚓咔嚓号小火车 · 动画视频PPT</title>
+<style>
+/* ===== RESET & BASE ===== */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { width: 100%; height: 100%; overflow: hidden; background: #0a0a0a; font-family: 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif; }
+
+/* ===== STAGE ===== */
+#stage {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* ===== SLIDES ===== */
+.slide {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: none;
+  overflow: hidden;
+}
+.slide.active { display: block; }
+
+/* ===== SCENE IMAGE ===== */
+.scene-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  transform-origin: center center;
+}
+
+/* ===== OVERLAY LAYERS ===== */
+.overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+/* ===== CAPTION BAR ===== */
+.caption-bar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 18px 40px 22px;
+  background: linear-gradient(to top, rgba(0,0,0,0.72) 0%, rgba(0,0,0,0.0) 100%);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.caption-act {
+  font-size: clamp(13px, 1.4vw, 18px);
+  color: rgba(255,255,255,0.7);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+.caption-title {
+  font-size: clamp(28px, 4.5vw, 64px);
+  font-weight: 900;
+  color: #fff;
+  text-shadow: 0 2px 12px rgba(0,0,0,0.5);
+  line-height: 1.1;
+}
+.caption-sub {
+  font-size: clamp(14px, 1.8vw, 24px);
+  color: rgba(255,255,255,0.85);
+  font-weight: 500;
+}
+.caption-cue {
+  font-size: clamp(12px, 1.3vw, 17px);
+  color: rgba(255,220,100,0.9);
+  font-style: italic;
+  margin-top: 4px;
+}
+
+/* ===== MUSIC TAG ===== */
+.music-tag {
+  position: absolute;
+  top: 20px;
+  right: 24px;
+  background: rgba(0,0,0,0.45);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 20px;
+  padding: 6px 14px;
+  font-size: clamp(11px, 1.1vw, 14px);
+  color: rgba(255,255,255,0.8);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.music-tag::before { content: '♪'; font-size: 1.1em; }
+
+/* ===== ACT BADGE ===== */
+.act-badge {
+  position: absolute;
+  top: 20px;
+  left: 24px;
+  background: rgba(37,99,235,0.85);
+  backdrop-filter: blur(8px);
+  border-radius: 12px;
+  padding: 8px 18px;
+  font-size: clamp(13px, 1.4vw, 18px);
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: 0.05em;
+}
+
+/* ===== VIDEO SLOT INDICATOR ===== */
+.video-slot-badge {
+  position: absolute;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(220,38,38,0.8);
+  backdrop-filter: blur(6px);
+  border-radius: 8px;
+  padding: 5px 14px;
+  font-size: clamp(10px, 1vw, 13px);
+  color: #fff;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.video-slot-badge::before {
+  content: '';
+  width: 8px; height: 8px;
+  background: #fff;
+  border-radius: 50%;
+  animation: rec-blink 1s ease-in-out infinite;
+}
+@keyframes rec-blink { 0%,100%{opacity:1} 50%{opacity:0.2} }
+
+/* ===== PROGRESS BAR ===== */
+#progress-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #60a5fa, #a78bfa);
+  transition: width 0.4s ease;
+  z-index: 100;
+}
+
+/* ===== NAV CONTROLS ===== */
+#nav {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  display: flex;
+  gap: 10px;
+  z-index: 200;
+}
+.nav-btn {
+  width: 44px; height: 44px;
+  border-radius: 50%;
+  border: 2px solid rgba(255,255,255,0.4);
+  background: rgba(0,0,0,0.5);
+  backdrop-filter: blur(8px);
+  color: #fff;
+  font-size: 18px;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.2s;
+}
+.nav-btn:hover { background: rgba(37,99,235,0.7); border-color: #60a5fa; transform: scale(1.1); }
+
+/* ===== SLIDE COUNTER ===== */
+#counter {
+  position: fixed;
+  bottom: 32px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: rgba(255,255,255,0.6);
+  font-size: 13px;
+  z-index: 200;
+  letter-spacing: 0.1em;
+}
+
+/* ===== TRANSITION OVERLAY ===== */
+#transition-overlay {
+  position: fixed;
+  inset: 0;
+  background: #000;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 300;
+  transition: opacity 0.35s ease;
+}
+#transition-overlay.fade-in { opacity: 1; pointer-events: all; }
+
+/* ===== TITLE SCREEN ===== */
+#title-screen {
+  position: fixed;
+  inset: 0;
+  background: linear-gradient(135deg, #1e3a5f 0%, #0f172a 50%, #1a1040 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 500;
+  cursor: pointer;
+}
+.title-train {
+  font-size: clamp(60px, 10vw, 120px);
+  animation: train-enter 1.2s cubic-bezier(0.34,1.56,0.64,1) forwards;
+  transform: translateX(-120%);
+}
+@keyframes train-enter { to { transform: translateX(0); } }
+.title-main {
+  font-size: clamp(32px, 6vw, 80px);
+  font-weight: 900;
+  color: #fff;
+  text-align: center;
+  margin-top: 20px;
+  animation: fade-up 0.8s 0.6s ease forwards;
+  opacity: 0;
+  transform: translateY(20px);
+}
+.title-sub {
+  font-size: clamp(14px, 2vw, 24px);
+  color: rgba(255,255,255,0.6);
+  margin-top: 12px;
+  animation: fade-up 0.8s 0.9s ease forwards;
+  opacity: 0;
+  transform: translateY(20px);
+}
+.title-start {
+  margin-top: 40px;
+  padding: 14px 40px;
+  background: linear-gradient(135deg, #2563eb, #7c3aed);
+  border: none;
+  border-radius: 50px;
+  color: #fff;
+  font-size: clamp(16px, 2vw, 22px);
+  font-weight: 700;
+  cursor: pointer;
+  animation: fade-up 0.8s 1.2s ease forwards;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: transform 0.2s, box-shadow 0.2s;
+  box-shadow: 0 4px 24px rgba(37,99,235,0.4);
+}
+.title-start:hover { transform: translateY(-2px) scale(1.04); box-shadow: 0 8px 32px rgba(37,99,235,0.6); }
+@keyframes fade-up { to { opacity: 1; transform: translateY(0); } }
+
+/* ===== STEAM PARTICLES ===== */
+.steam-container {
+  position: absolute;
+  pointer-events: none;
+}
+.steam-particle {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.7);
+  animation: steam-rise var(--dur, 3s) ease-out infinite;
+  animation-delay: var(--delay, 0s);
+}
+@keyframes steam-rise {
+  0% { transform: translateY(0) scale(0.5); opacity: 0.8; }
+  50% { transform: translateY(-60px) translateX(var(--drift, 10px)) scale(1.2); opacity: 0.4; }
+  100% { transform: translateY(-120px) translateX(calc(var(--drift, 10px) * 2)) scale(1.8); opacity: 0; }
+}
+
+/* ===== FLOATING ELEMENTS ===== */
+.float-elem {
+  position: absolute;
+  animation: float-bob var(--dur, 3s) ease-in-out infinite;
+  animation-delay: var(--delay, 0s);
+}
+@keyframes float-bob {
+  0%, 100% { transform: translateY(0) rotate(var(--rot0, 0deg)); }
+  50% { transform: translateY(var(--bob, -12px)) rotate(var(--rot1, 3deg)); }
+}
+
+/* ===== PARALLAX SCROLL ===== */
+.parallax-bg {
+  animation: parallax-move var(--dur, 8s) linear infinite;
+}
+@keyframes parallax-move {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-8%); }
+}
+
+/* ===== GLOW PULSE ===== */
+.glow-pulse {
+  animation: glow-breathe var(--dur, 4s) ease-in-out infinite;
+}
+@keyframes glow-breathe {
+  0%, 100% { filter: brightness(1) drop-shadow(0 0 8px rgba(255,180,50,0.3)); }
+  50% { filter: brightness(1.15) drop-shadow(0 0 24px rgba(255,180,50,0.7)); }
+}
+
+/* ===== HEART BLOOM ===== */
+.heart-bloom {
+  position: absolute;
+  bottom: 15%;
+  left: 50%;
+  transform: translateX(-50%) scale(0);
+  font-size: clamp(60px, 10vw, 120px);
+  animation: heart-appear 2s 4s cubic-bezier(0.34,1.56,0.64,1) forwards;
+  filter: drop-shadow(0 0 20px rgba(255,100,150,0.8));
+  pointer-events: none;
+}
+@keyframes heart-appear {
+  0% { transform: translateX(-50%) scale(0); opacity: 0; }
+  60% { transform: translateX(-50%) scale(1.2); opacity: 1; }
+  80% { transform: translateX(-50%) scale(0.95); opacity: 1; }
+  100% { transform: translateX(-50%) scale(1); opacity: 1; }
+}
+
+/* ===== STAR TWINKLE ===== */
+.star-twinkle {
+  animation: twinkle var(--dur, 1.5s) ease-in-out infinite;
+  animation-delay: var(--delay, 0s);
+}
+@keyframes twinkle {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.3; transform: scale(0.7); }
+}
+
+/* ===== WHEEL ROTATE ===== */
+.wheel-rotate {
+  animation: wheel-spin var(--dur, 1s) linear infinite;
+  transform-origin: center;
+}
+@keyframes wheel-spin { to { transform: rotate(360deg); } }
+
+/* ===== BIRD FLY ===== */
+.bird-fly {
+  animation: bird-arc var(--dur, 4s) ease-in-out infinite;
+  animation-delay: var(--delay, 0s);
+}
+@keyframes bird-arc {
+  0% { transform: translateX(-20px) translateY(0) scaleX(1); }
+  25% { transform: translateX(10px) translateY(-15px) scaleX(1); }
+  50% { transform: translateX(30px) translateY(-5px) scaleX(1); }
+  75% { transform: translateX(10px) translateY(-20px) scaleX(1); }
+  100% { transform: translateX(-20px) translateY(0) scaleX(1); }
+}
+
+/* ===== RECEDE ANIMATION ===== */
+.recede-left {
+  animation: recede var(--dur, 5s) ease-in-out infinite;
+}
+@keyframes recede {
+  0% { transform: scale(1) translateX(0); opacity: 1; }
+  100% { transform: scale(0.6) translateX(-15%); opacity: 0.5; }
+}
+
+/* ===== COLOR SHIFT SKY ===== */
+.sky-shift {
+  animation: sky-color var(--dur, 6s) ease-in-out infinite alternate;
+}
+@keyframes sky-color {
+  0% { filter: hue-rotate(0deg) brightness(1); }
+  100% { filter: hue-rotate(20deg) brightness(1.1); }
+}
+
+/* ===== CLAP BOUNCE ===== */
+.clap-bounce {
+  animation: clap var(--dur, 0.5s) ease-in-out infinite;
+  animation-delay: var(--delay, 0s);
+}
+@keyframes clap {
+  0%, 100% { transform: scale(1) translateY(0); }
+  50% { transform: scale(1.04) translateY(-6px); }
+}
+
+/* ===== SWAY ===== */
+.sway {
+  animation: sway-anim var(--dur, 2s) ease-in-out infinite;
+  animation-delay: var(--delay, 0s);
+  transform-origin: bottom center;
+}
+@keyframes sway-anim {
+  0%, 100% { transform: rotate(-3deg); }
+  50% { transform: rotate(3deg); }
+}
+
+/* ===== SHIMMER ===== */
+.shimmer-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(105deg, transparent 40%, rgba(255,255,255,0.08) 50%, transparent 60%);
+  background-size: 200% 100%;
+  animation: shimmer-move 3s linear infinite;
+  pointer-events: none;
+}
+@keyframes shimmer-move {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* ===== SLIDE-SPECIFIC COLORS ===== */
+#s01 .act-badge { background: rgba(37,99,235,0.85); }
+#s02 .act-badge { background: rgba(29,78,216,0.85); }
+#s03 .act-badge { background: rgba(22,163,74,0.85); }
+#s04 .act-badge { background: rgba(21,128,61,0.85); }
+#s05 .act-badge { background: rgba(202,138,4,0.85); }
+#s06 .act-badge { background: rgba(234,88,12,0.85); }
+#s07 .act-badge { background: rgba(147,51,234,0.85); }
+
+/* ===== KEYBOARD HINT ===== */
+#key-hint {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(0,0,0,0.7);
+  backdrop-filter: blur(12px);
+  border-radius: 16px;
+  padding: 20px 32px;
+  color: #fff;
+  font-size: 15px;
+  text-align: center;
+  z-index: 400;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s;
+  line-height: 1.8;
+}
+#key-hint.show { opacity: 1; }
+
+/* ===== FULLSCREEN BTN ===== */
+#fs-btn {
+  position: fixed;
+  top: 20px;
+  right: 24px;
+  width: 36px; height: 36px;
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,0.3);
+  background: rgba(0,0,0,0.4);
+  backdrop-filter: blur(6px);
+  color: rgba(255,255,255,0.7);
+  font-size: 16px;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  z-index: 200;
+  transition: all 0.2s;
+}
+#fs-btn:hover { background: rgba(37,99,235,0.6); color: #fff; }
+</style>
+</head>
+<body>
+
+<!-- TITLE SCREEN -->
+<div id="title-screen">
+  <div class="title-train">🚂</div>
+  <div class="title-main">咔嚓咔嚓号小火车</div>
+  <div class="title-sub">动画视频PPT · 七幕旅程 · 吉卜力风格</div>
+  <button class="title-start" onclick="startPresentation()">▶ 出发啦！</button>
+</div>
+
+<!-- TRANSITION OVERLAY -->
+<div id="transition-overlay"></div>
+
+<!-- STAGE -->
+<div id="stage">
+
+  <!-- ===== S01: 始发站 ===== -->
+  <div class="slide" id="s01">
+    <img class="scene-img parallax-bg" src="/Users/hanqiang/Downloads/音乐剧/第一幕/1uhlXmUtd9V5x1v6IBPiC.jpeg" alt="始发站" style="--dur:12s">
+    
+    <!-- Steam particles overlay -->
+    <div class="steam-container" style="top:8%;left:22%">
+      <div class="steam-particle" style="width:18px;height:18px;--dur:2.8s;--delay:0s;--drift:8px;left:0;top:0"></div>
+      <div class="steam-particle" style="width:14px;height:14px;--dur:3.2s;--delay:0.8s;--drift:-6px;left:12px;top:5px"></div>
+      <div class="steam-particle" style="width:22px;height:22px;--dur:2.5s;--delay:1.5s;--drift:12px;left:-8px;top:2px"></div>
+      <div class="steam-particle" style="width:10px;height:10px;--dur:3.5s;--delay:2.2s;--drift:5px;left:20px;top:0"></div>
+    </div>
+
+    <!-- Shimmer overlay -->
+    <div class="shimmer-overlay"></div>
+
+    <!-- Video slot indicator -->
+    <div class="video-slot-badge">VIDEO SLOT · V01</div>
+
+    <!-- Act badge -->
+    <div class="act-badge">第一幕</div>
+
+    <!-- Music tag -->
+    <div class="music-tag" style="top:60px">口哨+木琴 · 火车鸣笛</div>
+
+    <!-- Caption -->
+    <div class="caption-bar">
+      <div class="caption-act">ACT 01 · 热闹的始发站</div>
+      <div class="caption-title">咔嚓咔嚓号，准备出发！</div>
+      <div class="caption-sub">🎈 小朋友们排好队，我们要出发啦！</div>
+      <div class="caption-cue">🎤 主持人：小朋友们，咔嚓咔嚓号要出发啦！大家准备好了吗？</div>
+    </div>
+  </div>
+
+  <!-- ===== S02: 火车开动 ===== -->
+  <div class="slide" id="s02">
+    <img class="scene-img" src="/Users/hanqiang/Downloads/音乐剧/第二幕/_Mf1wi-aUWYhD60ytsc01.jpeg" alt="火车开动" style="animation: parallax-move 6s linear infinite; --dur:6s">
+    
+    <!-- Motion blur overlay for speed feel -->
+    <div class="overlay" style="background: linear-gradient(90deg, transparent 60%, rgba(255,255,255,0.04) 80%, transparent 100%); animation: shimmer-move 1.5s linear infinite;"></div>
+
+    <!-- Shimmer overlay -->
+    <div class="shimmer-overlay"></div>
+
+    <!-- Video slot indicator -->
+    <div class="video-slot-badge">VIDEO SLOT · V02</div>
+
+    <!-- Act badge -->
+    <div class="act-badge">第二幕</div>
+
+    <!-- Music tag -->
+    <div class="music-tag" style="top:60px">器乐版《火车开啦》· 响板节奏</div>
+
+    <!-- Speed lines overlay -->
+    <div class="overlay" style="background: repeating-linear-gradient(90deg, transparent, transparent 98%, rgba(255,255,255,0.03) 100%); animation: parallax-move 0.8s linear infinite;"></div>
+
+    <!-- Caption -->
+    <div class="caption-bar">
+      <div class="caption-act">ACT 02 · 火车开动啦</div>
+      <div class="caption-title">咔嚓咔嚓，向前奔跑！</div>
+      <div class="caption-sub">🌳 窗外的树木都在向后跑呢！</div>
+      <div class="caption-cue">🎤 主持人：咔嚓咔嚓——火车开动啦！</div>
+    </div>
+  </div>
+
+  <!-- ===== S03: 森林站 ===== -->
+  <div class="slide" id="s03">
+    <img class="scene-img" src="/Users/hanqiang/Downloads/音乐剧/第三幕/QzuLECIZYOCMUy_UVfN9j.jpeg" alt="森林站">
+    
+    <!-- Light dapple overlay -->
+    <div class="overlay" style="background: radial-gradient(ellipse 40% 30% at 30% 20%, rgba(255,255,200,0.12) 0%, transparent 70%); animation: glow-breathe 3s ease-in-out infinite; --dur:3s;"></div>
+    <div class="overlay" style="background: radial-gradient(ellipse 30% 25% at 70% 15%, rgba(255,255,200,0.08) 0%, transparent 70%); animation: glow-breathe 4s 1s ease-in-out infinite; --dur:4s;"></div>
+
+    <!-- Shimmer overlay -->
+    <div class="shimmer-overlay"></div>
+
+    <!-- Video slot indicator -->
+    <div class="video-slot-badge">VIDEO SLOT · V03</div>
+
+    <!-- Act badge -->
+    <div class="act-badge">第三幕</div>
+
+    <!-- Music tag -->
+    <div class="music-tag" style="top:60px">木管+竖琴 · 鸟鸣声效</div>
+
+    <!-- Floating bird emojis -->
+    <div class="float-elem" style="top:12%;left:55%;font-size:clamp(20px,3vw,36px);--dur:3s;--delay:0s;--bob:-18px;--rot0:-5deg;--rot1:5deg;">🕊️</div>
+    <div class="float-elem" style="top:8%;left:68%;font-size:clamp(16px,2.5vw,28px);--dur:2.5s;--delay:0.7s;--bob:-14px;--rot0:3deg;--rot1:-3deg;">🕊️</div>
+    <div class="float-elem" style="top:15%;left:45%;font-size:clamp(14px,2vw,22px);--dur:3.5s;--delay:1.4s;--bob:-20px;--rot0:-8deg;--rot1:8deg;">🕊️</div>
+
+    <!-- Caption -->
+    <div class="caption-bar">
+      <div class="caption-act">ACT 03 · 抵达森林站</div>
+      <div class="caption-title">森林里的新朋友</div>
+      <div class="caption-sub">🌸 小鸟、小花都来欢迎我们啦！</div>
+      <div class="caption-cue">🎤 主持人：哇！森林站到了！小鸟、小花都来欢迎我们啦！</div>
+    </div>
+  </div>
+
+  <!-- ===== S04: 告别森林站 ===== -->
+  <div class="slide" id="s04">
+    <img class="scene-img" src="/Users/hanqiang/Downloads/音乐剧/第四幕/oMOK7-52ELXa-Cd47m6Nl.jpeg" alt="告别森林站">
+    
+    <!-- Receding effect overlay - vignette from right -->
+    <div class="overlay" style="background: linear-gradient(to right, rgba(0,0,0,0) 40%, rgba(0,0,0,0.15) 100%); animation: recede 5s ease-in-out infinite;"></div>
+
+    <!-- Warm interior light -->
+    <div class="overlay" style="background: radial-gradient(ellipse 60% 80% at 20% 50%, rgba(255,220,150,0.08) 0%, transparent 70%);"></div>
+
+    <!-- Shimmer overlay -->
+    <div class="shimmer-overlay"></div>
+
+    <!-- Video slot indicator -->
+    <div class="video-slot-badge">VIDEO SLOT · V04</div>
+
+    <!-- Act badge -->
+    <div class="act-badge">第四幕</div>
+
+    <!-- Music tag -->
+    <div class="music-tag" style="top:60px">打击乐节奏 · 轻柔弦乐</div>
+
+    <!-- Caption -->
+    <div class="caption-bar">
+      <div class="caption-act">ACT 04 · 告别森林站</div>
+      <div class="caption-title">森林站，再见！</div>
+      <div class="caption-sub">🌿 依依不舍，但旅程还在继续……</div>
+      <div class="caption-cue">🎤 主持人：小朋友们，和森林站的朋友们说再见吧！再见——</div>
+    </div>
+  </div>
+
+  <!-- ===== S05: 动物乐园站 ===== -->
+  <div class="slide" id="s05">
+    <img class="scene-img clap-bounce" src="/Users/hanqiang/Downloads/音乐剧/第五幕/xNqCojTLHcHZCiefFNRYY.jpeg" alt="动物乐园站" style="--dur:0.5s;--delay:0s">
+    
+    <!-- Festive color overlay -->
+    <div class="overlay" style="background: radial-gradient(ellipse 80% 60% at 50% 30%, rgba(255,220,50,0.06) 0%, transparent 70%); animation: glow-breathe 2s ease-in-out infinite;"></div>
+
+    <!-- Shimmer overlay -->
+    <div class="shimmer-overlay"></div>
+
+    <!-- Video slot indicator -->
+    <div class="video-slot-badge">VIDEO SLOT · V05</div>
+
+    <!-- Act badge -->
+    <div class="act-badge">第五幕</div>
+
+    <!-- Music tag -->
+    <div class="music-tag" style="top:60px">《友谊拍手歌》· 动物叫声</div>
+
+    <!-- Floating emoji animals -->
+    <div class="float-elem" style="top:5%;left:10%;font-size:clamp(18px,2.5vw,32px);--dur:1.2s;--delay:0s;--bob:-10px;">🐝</div>
+    <div class="float-elem" style="top:8%;left:80%;font-size:clamp(16px,2vw,26px);--dur:1.5s;--delay:0.3s;--bob:-14px;">🦋</div>
+    <div class="float-elem" style="top:3%;left:50%;font-size:clamp(14px,1.8vw,22px);--dur:1.8s;--delay:0.6s;--bob:-8px;">🦋</div>
+    <div class="float-elem" style="top:6%;left:35%;font-size:clamp(16px,2vw,24px);--dur:1.3s;--delay:0.9s;--bob:-12px;">🐝</div>
+
+    <!-- Caption -->
+    <div class="caption-bar">
+      <div class="caption-act">ACT 05 · 抵达动物乐园站</div>
+      <div class="caption-title">动物乐园大狂欢</div>
+      <div class="caption-sub">🐶🐱🐥 一起拍手！汪汪！喵喵！嘎嘎！</div>
+      <div class="caption-cue">🎤 主持人：动物乐园站到啦！大家一起拍手！👏👏👏</div>
+    </div>
+  </div>
+
+  <!-- ===== S06: 夕阳归途 ===== -->
+  <div class="slide" id="s06">
+    <img class="scene-img glow-pulse sky-shift" src="/Users/hanqiang/Downloads/音乐剧/第六幕/NZ-CYOyTVmf7NB4wkFtbT.jpeg" alt="夕阳归途" style="--dur:4s">
+    
+    <!-- Warm golden overlay -->
+    <div class="overlay" style="background: radial-gradient(ellipse 50% 40% at 15% 60%, rgba(255,160,50,0.15) 0%, transparent 70%); animation: glow-breathe 4s ease-in-out infinite;"></div>
+
+    <!-- Shimmer overlay -->
+    <div class="shimmer-overlay"></div>
+
+    <!-- Video slot indicator -->
+    <div class="video-slot-badge">VIDEO SLOT · V06</div>
+
+    <!-- Act badge -->
+    <div class="act-badge">第六幕</div>
+
+    <!-- Music tag -->
+    <div class="music-tag" style="top:60px">钢琴+大提琴 · 温情慢版</div>
+
+    <!-- Caption -->
+    <div class="caption-bar">
+      <div class="caption-act">ACT 06 · 夕阳归途</div>
+      <div class="caption-title">金色的回家路</div>
+      <div class="caption-sub">🌅 夕阳下，我们踏上回家的路……</div>
+      <div class="caption-cue">🎤 主持人：太阳公公要回家了，咔嚓咔嚓号也要回家啦……</div>
+    </div>
+  </div>
+
+  <!-- ===== S07: 学校站 ===== -->
+  <div class="slide" id="s07">
+    <img class="scene-img" src="/Users/hanqiang/Downloads/音乐剧/第七幕/yCgEgIIaa357E387nvfB6.jpeg" alt="学校站">
+    
+    <!-- Purple twilight overlay -->
+    <div class="overlay" style="background: radial-gradient(ellipse 60% 50% at 50% 40%, rgba(147,51,234,0.08) 0%, transparent 70%); animation: glow-breathe 5s ease-in-out infinite;"></div>
+
+    <!-- Shimmer overlay -->
+    <div class="shimmer-overlay"></div>
+
+    <!-- Star twinkles -->
+    <div class="star-twinkle" style="position:absolute;top:12%;left:30%;font-size:clamp(14px,2vw,22px);--dur:1.2s;--delay:0s;">✨</div>
+    <div class="star-twinkle" style="position:absolute;top:8%;left:55%;font-size:clamp(12px,1.5vw,18px);--dur:1.8s;--delay:0.4s;">⭐</div>
+    <div class="star-twinkle" style="position:absolute;top:15%;left:72%;font-size:clamp(10px,1.3vw,16px);--dur:1.5s;--delay:0.8s;">✨</div>
+    <div class="star-twinkle" style="position:absolute;top:6%;left:20%;font-size:clamp(12px,1.6vw,20px);--dur:2s;--delay:1.2s;">⭐</div>
+
+    <!-- Heart bloom -->
+    <div class="heart-bloom">💗</div>
+
+    <!-- Video slot indicator -->
+    <div class="video-slot-badge">VIDEO SLOT · V07</div>
+
+    <!-- Act badge -->
+    <div class="act-badge">第七幕</div>
+
+    <!-- Music tag -->
+    <div class="music-tag" style="top:60px">童声合唱 · 哨子声结尾</div>
+
+    <!-- Caption -->
+    <div class="caption-bar">
+      <div class="caption-act">ACT 07 · 回到学校站</div>
+      <div class="caption-title">友谊的终点，也是起点</div>
+      <div class="caption-sub">💗 谢谢你，我的朋友！</div>
+      <div class="caption-cue">🎤 主持人：学校站到啦！谢谢咔嚓咔嚓号，谢谢所有的朋友！</div>
+    </div>
+  </div>
+
+</div><!-- /stage -->
+
+<!-- PROGRESS BAR -->
+<div id="progress-bar" style="width:0%"></div>
+
+<!-- COUNTER -->
+<div id="counter">1 / 7</div>
+
+<!-- NAV -->
+<div id="nav">
+  <button class="nav-btn" onclick="prevSlide()" title="上一幕 (←)">‹</button>
+  <button class="nav-btn" onclick="nextSlide()" title="下一幕 (→)">›</button>
+</div>
+
+<!-- FULLSCREEN -->
+<button id="fs-btn" onclick="toggleFullscreen()" title="全屏">⛶</button>
+
+<!-- KEY HINT -->
+<div id="key-hint">
+  ← → 切换幕次<br>
+  Space 下一幕<br>
+  F 全屏<br>
+  H 显示/隐藏提示<br>
+  M 静音/取消静音
+</div>
+
+<script>
+const TOTAL = 7;
+let current = 0;
+let transitioning = false;
+
+const slides = document.querySelectorAll('.slide');
+const progressBar = document.getElementById('progress-bar');
+const counter = document.getElementById('counter');
+const overlay = document.getElementById('transition-overlay');
+const keyHint = document.getElementById('key-hint');
+
+function startPresentation() {
+  const titleScreen = document.getElementById('title-screen');
+  titleScreen.style.transition = 'opacity 0.6s ease';
+  titleScreen.style.opacity = '0';
+  setTimeout(() => {
+    titleScreen.style.display = 'none';
+    showSlide(0, false);
+  }, 600);
+}
+
+function showSlide(index, animate = true) {
+  if (transitioning && animate) return;
+  if (index < 0 || index >= TOTAL) return;
+
+  if (animate) {
+    transitioning = true;
+    overlay.classList.add('fade-in');
+    setTimeout(() => {
+      slides.forEach(s => s.classList.remove('active'));
+      slides[index].classList.add('active');
+      current = index;
+      updateUI();
+      overlay.classList.remove('fade-in');
+      setTimeout(() => { transitioning = false; }, 400);
+    }, 350);
+  } else {
+    slides.forEach(s => s.classList.remove('active'));
+    slides[index].classList.add('active');
+    current = index;
+    updateUI();
+  }
+}
+
+function updateUI() {
+  const pct = ((current + 1) / TOTAL) * 100;
+  progressBar.style.width = pct + '%';
+  counter.textContent = (current + 1) + ' / ' + TOTAL;
+}
+
+function nextSlide() { showSlide(current + 1); }
+function prevSlide() { showSlide(current - 1); }
+
+function toggleFullscreen() {
+  if (!document.fullscreenElement) {
+    document.documentElement.requestFullscreen().catch(() => {});
+  } else {
+    document.exitFullscreen();
+  }
+}
+
+let hintTimer;
+function showHint() {
+  keyHint.classList.add('show');
+  clearTimeout(hintTimer);
+  hintTimer = setTimeout(() => keyHint.classList.remove('show'), 2500);
+}
+
+document.addEventListener('keydown', e => {
+  switch(e.key) {
+    case 'ArrowRight': case ' ': e.preventDefault(); nextSlide(); break;
+    case 'ArrowLeft': e.preventDefault(); prevSlide(); break;
+    case 'f': case 'F': toggleFullscreen(); break;
+    case 'h': case 'H': showHint(); break;
+    case 'Escape':
+      if (document.fullscreenElement) document.exitFullscreen();
+      break;
+  }
+});
+
+// Touch/swipe support
+let touchStartX = 0;
+document.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; }, { passive: true });
+document.addEventListener('touchend', e => {
+  const dx = e.changedTouches[0].clientX - touchStartX;
+  if (Math.abs(dx) > 50) { dx < 0 ? nextSlide() : prevSlide(); }
+}, { passive: true });
+
+// Click to advance (avoid nav buttons)
+document.getElementById('stage').addEventListener('click', e => {
+  if (e.target.closest('#nav') || e.target.closest('#fs-btn')) return;
+  nextSlide();
+});
+
+// Show hint on first load
+setTimeout(showHint, 1500);
+
+// ===== AUDIO ENGINE =====
+const audioEngine = (() => {
+  const tracks = {};
+  let currentTrack = null;
+  let fadeTimer = null;
+
+  // 预加载所有音轨
+  function preload(audioMap) {
+    Object.entries(audioMap).forEach(([slideId, src]) => {
+      const audio = new Audio(src);
+      audio.loop = slideId !== 's07'; // 最后一幕不循环
+      audio.volume = 0;
+      audio.preload = 'auto';
+      tracks[slideId] = audio;
+    });
+  }
+
+  // 淡入淡出切换
+  function switchTo(slideId, targetVol = 0.65) {
+    const next = tracks[slideId];
+    if (!next) return;
+    if (currentTrack === next) return;
+
+    // 淡出当前
+    if (currentTrack) {
+      const prev = currentTrack;
+      fadeOut(prev, 600, () => { prev.pause(); prev.currentTime = 0; });
+    }
+
+    // 淡入新轨
+    currentTrack = next;
+    next.currentTime = 0;
+    next.play().catch(() => {
+      // 浏览器自动播放策略：等待用户交互后重试
+      document.addEventListener('click', () => next.play().catch(() => {}), { once: true });
+    });
+    fadeIn(next, 800, targetVol);
+  }
+
+  function fadeIn(audio, duration, targetVol) {
+    clearInterval(fadeTimer);
+    const steps = 20;
+    const interval = duration / steps;
+    const step = targetVol / steps;
+    let vol = 0;
+    fadeTimer = setInterval(() => {
+      vol = Math.min(vol + step, targetVol);
+      audio.volume = vol;
+      if (vol >= targetVol) clearInterval(fadeTimer);
+    }, interval);
+  }
+
+  function fadeOut(audio, duration, callback) {
+    const steps = 20;
+    const interval = duration / steps;
+    const step = audio.volume / steps;
+    let vol = audio.volume;
+    const timer = setInterval(() => {
+      vol = Math.max(vol - step, 0);
+      audio.volume = vol;
+      if (vol <= 0) {
+        clearInterval(timer);
+        if (callback) callback();
+      }
+    }, interval);
+  }
+
+  function setVolume(vol) {
+    if (currentTrack) currentTrack.volume = Math.max(0, Math.min(1, vol));
+  }
+
+  function mute() { if (currentTrack) currentTrack.volume = 0; }
+  function unmute() { if (currentTrack) currentTrack.volume = 0.65; }
+
+  return { preload, switchTo, setVolume, mute, unmute };
+})();
+
+// 幕次 → 音轨映射
+const SLIDE_AUDIO = {
+  0: 's01', 1: 's02', 2: 's03', 3: 's04',
+  4: 's05', 5: 's06', 6: 's07'
+};
+
+// 音量配置（各幕情绪不同，音量略有差异）
+const SLIDE_VOLUME = {
+  0: 0.6,  // 始发站：欢快
+  1: 0.7,  // 火车开动：活力
+  2: 0.55, // 森林站：灵动
+  3: 0.5,  // 告别森林：轻柔
+  4: 0.75, // 动物乐园：热闹
+  5: 0.5,  // 夕阳归途：舒缓
+  6: 0.55, // 学校站：温情
+};
+
+// 音频文件路径（相对路径）
+const AUDIO_SOURCES = {
+  's01': 'audio/s01_station_start.mp3',
+  's02': 'audio/s02_train_moving.mp3',
+  's03': 'audio/s03_forest_station.mp3',
+  's04': 'audio/s04_farewell_forest.mp3',
+  's05': 'audio/s05_animal_park.mp3',
+  's06': 'audio/s06_sunset_journey.mp3',
+  's07': 'audio/s07_school_station.mp3',
+};
+
+// 初始化音频引擎
+audioEngine.preload(AUDIO_SOURCES);
+
+// 拦截 showSlide，在切换幕次时同步切换音轨
+const _origShowSlide = showSlide;
+showSlide = function(index, animate = true) {
+  _origShowSlide(index, animate);
+  const trackId = SLIDE_AUDIO[index];
+  if (trackId) {
+    audioEngine.switchTo(trackId, SLIDE_VOLUME[index] || 0.6);
+  }
+};
+
+// 音量控制 UI
+function toggleMute() {
+  const btn = document.getElementById('mute-btn');
+  if (btn.dataset.muted === '1') {
+    audioEngine.unmute();
+    btn.textContent = '🔊';
+    btn.dataset.muted = '0';
+  } else {
+    audioEngine.mute();
+    btn.textContent = '🔇';
+    btn.dataset.muted = '1';
+  }
+}
+
+// 键盘快捷键：M 静音
+document.addEventListener('keydown', e => {
+  if (e.key === 'm' || e.key === 'M') toggleMute();
+});
+// ===== END AUDIO ENGINE =====
+
+</script>
+
+  <!-- MUTE BUTTON -->
+  <button id="mute-btn" data-muted="0" onclick="toggleMute()"
+    style="position:fixed;bottom:24px;left:24px;width:44px;height:44px;
+    border-radius:50%;border:2px solid rgba(255,255,255,0.4);
+    background:rgba(0,0,0,0.5);backdrop-filter:blur(8px);
+    color:#fff;font-size:20px;cursor:pointer;z-index:200;
+    display:flex;align-items:center;justify-content:center;
+    transition:all 0.2s;" title="静音/取消静音 (M)">🔊</button>
+
+</body>
+</html>

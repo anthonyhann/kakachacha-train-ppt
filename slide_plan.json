@@ -1,0 +1,152 @@
+[
+  {
+    "slide_id": "S01",
+    "act": "第一幕",
+    "title": "咔嚓咔嚓号，准备出发！",
+    "subtitle": "热闹的始发站",
+    "image": "第一幕/1uhlXmUtd9V5x1v6IBPiC.jpeg",
+    "bg_color": "#e8f4fd",
+    "accent_color": "#2563eb",
+    "emotion": "期待、欢乐",
+    "duration_seconds": 8,
+    "animations": [
+      {"id": "steam", "type": "particle-float", "target": "烟囱蒸汽", "loop": true, "duration": 3000},
+      {"id": "flag", "type": "sway", "target": "小旗", "loop": true, "amplitude": 8},
+      {"id": "kids", "type": "bounce", "target": "小朋友群像", "loop": true, "amplitude": 4},
+      {"id": "sign", "type": "flash", "target": "始发站站牌", "loop": false, "delay": 500}
+    ],
+    "video_slot": {"id": "V01", "purpose": "始发站全景动画", "duration": 8, "fallback": "static-image"},
+    "caption": "咔嚓咔嚓号出发啦！",
+    "music": "口哨+木琴，轻快节奏，火车鸣笛声效",
+    "speaker_cue": "小朋友们，咔嚓咔嚓号要出发啦！大家准备好了吗？"
+  },
+  {
+    "slide_id": "S02",
+    "act": "第二幕",
+    "title": "咔嚓咔嚓，向前奔跑！",
+    "subtitle": "火车开动啦",
+    "image": "第二幕/_Mf1wi-aUWYhD60ytsc01.jpeg",
+    "bg_color": "#dbeafe",
+    "accent_color": "#1d4ed8",
+    "emotion": "活力、兴奋",
+    "duration_seconds": 8,
+    "animations": [
+      {"id": "wheels", "type": "rotate", "target": "车轮", "loop": true, "speed": 2},
+      {"id": "bg-scroll", "type": "parallax-scroll", "target": "背景树木云朵", "loop": true, "speed": 1.5},
+      {"id": "smoke", "type": "drift-right", "target": "烟囱烟雾", "loop": true},
+      {"id": "kids-wave", "type": "wave", "target": "车窗小朋友", "loop": true}
+    ],
+    "video_slot": {"id": "V02", "purpose": "火车行驶侧面动画，背景视差滚动", "duration": 8, "fallback": "static-image"},
+    "caption": "咔嚓咔嚓，出发咯！",
+    "music": "器乐版《火车开啦》，响板节奏，车轮声效",
+    "speaker_cue": "咔嚓咔嚓——火车开动啦！窗外的树木都在向后跑呢！"
+  },
+  {
+    "slide_id": "S03",
+    "act": "第三幕",
+    "title": "森林里的新朋友",
+    "subtitle": "抵达森林站",
+    "image": "第三幕/QzuLECIZYOCMUy_UVfN9j.jpeg",
+    "bg_color": "#dcfce7",
+    "accent_color": "#16a34a",
+    "emotion": "奇妙、友善",
+    "duration_seconds": 8,
+    "animations": [
+      {"id": "birds", "type": "flap-fly", "target": "小鸟", "loop": true, "path": "arc"},
+      {"id": "flowers", "type": "bloom", "target": "小花", "loop": true, "duration": 2000},
+      {"id": "trees", "type": "sway", "target": "小树", "loop": true, "amplitude": 5},
+      {"id": "light-spots", "type": "drift", "target": "树叶光斑", "loop": true},
+      {"id": "kids-nod", "type": "nod", "target": "车窗小朋友", "loop": true}
+    ],
+    "video_slot": {"id": "V03", "purpose": "森林站到达，小鸟飞舞小花开放动画", "duration": 8, "fallback": "static-image"},
+    "caption": "森林站到啦！小鸟来迎接我们！",
+    "music": "木管+竖琴，灵动轻快，鸟鸣声效",
+    "speaker_cue": "哇！森林站到了！小鸟、小花都来欢迎我们啦！"
+  },
+  {
+    "slide_id": "S04",
+    "act": "第四幕",
+    "title": "森林站，再见！",
+    "subtitle": "告别森林站（车窗视角）",
+    "image": "第四幕/oMOK7-52ELXa-Cd47m6Nl.jpeg",
+    "bg_color": "#f0fdf4",
+    "accent_color": "#15803d",
+    "emotion": "留恋、继续前行",
+    "duration_seconds": 8,
+    "animations": [
+      {"id": "station-recede", "type": "scale-out-left", "target": "森林站景物", "loop": true, "duration": 5000},
+      {"id": "girl-eyes", "type": "gaze-left", "target": "小女孩眼珠", "loop": false},
+      {"id": "window-light", "type": "shimmer", "target": "车窗光线", "loop": true},
+      {"id": "blur-bg", "type": "motion-blur", "target": "窗外背景", "loop": true}
+    ],
+    "video_slot": {"id": "V04", "purpose": "车窗内视角，森林站逐渐远去淡出", "duration": 8, "fallback": "static-image"},
+    "caption": "再见，森林站！谢谢你们！",
+    "music": "打击乐节奏+轻柔弦乐断奏，渐弱咔嚓声",
+    "speaker_cue": "小朋友们，和森林站的朋友们说再见吧！再见——"
+  },
+  {
+    "slide_id": "S05",
+    "act": "第五幕",
+    "title": "动物乐园大狂欢",
+    "subtitle": "抵达动物乐园站",
+    "image": "第五幕/xNqCojTLHcHZCiefFNRYY.jpeg",
+    "bg_color": "#fef9c3",
+    "accent_color": "#ca8a04",
+    "emotion": "热闹、友谊",
+    "duration_seconds": 10,
+    "animations": [
+      {"id": "dog-tail", "type": "wag", "target": "小狗尾巴", "loop": true, "speed": 3},
+      {"id": "cat-stretch", "type": "stretch", "target": "小猫", "loop": true},
+      {"id": "bee-fly", "type": "zigzag-fly", "target": "小蜜蜂", "loop": true},
+      {"id": "butterfly", "type": "flutter", "target": "蝴蝶", "loop": true},
+      {"id": "clap", "type": "clap-sync", "target": "小朋友和动物", "loop": true, "bpm": 120},
+      {"id": "sign-notes", "type": "flash-pulse", "target": "站牌音符", "loop": true}
+    ],
+    "video_slot": {"id": "V05", "purpose": "动物乐园热闹群像，拍手节奏动画", "duration": 10, "fallback": "static-image"},
+    "caption": "动物乐园站！一起拍手吧！",
+    "music": "改编版《友谊拍手歌》，动物叫声+儿童笑声",
+    "speaker_cue": "动物乐园站到啦！小狗、小猫、小鸭子都来了！大家一起拍手！"
+  },
+  {
+    "slide_id": "S06",
+    "act": "第六幕",
+    "title": "金色的回家路",
+    "subtitle": "夕阳归途",
+    "image": "第六幕/NZ-CYOyTVmf7NB4wkFtbT.jpeg",
+    "bg_color": "#fff7ed",
+    "accent_color": "#ea580c",
+    "emotion": "温馨、安宁",
+    "duration_seconds": 8,
+    "animations": [
+      {"id": "sun-glow", "type": "breathe-glow", "target": "夕阳光晕", "loop": true, "duration": 4000},
+      {"id": "train-move", "type": "slow-drift", "target": "火车", "loop": true, "direction": "left"},
+      {"id": "smoke-soft", "type": "soft-drift", "target": "烟雾", "loop": true},
+      {"id": "sky-gradient", "type": "color-shift", "target": "天空", "from": "#f97316", "to": "#c084fc", "loop": true, "duration": 6000}
+    ],
+    "video_slot": {"id": "V06", "purpose": "夕阳归途，光晕呼吸+天空渐变动画", "duration": 8, "fallback": "static-image"},
+    "caption": "夕阳下，我们踏上回家的路……",
+    "music": "钢琴+大提琴，《火车开啦》慢速温情版",
+    "speaker_cue": "太阳公公要回家了，咔嚓咔嚓号也要回家啦……"
+  },
+  {
+    "slide_id": "S07",
+    "act": "第七幕",
+    "title": "友谊的终点，也是起点",
+    "subtitle": "回到学校站",
+    "image": "第七幕/yCgEgIIaa357E387nvfB6.jpeg",
+    "bg_color": "#fdf4ff",
+    "accent_color": "#9333ea",
+    "emotion": "圆满、感动",
+    "duration_seconds": 10,
+    "animations": [
+      {"id": "kids-wave-bye", "type": "wave-goodbye", "target": "小朋友挥手", "loop": true},
+      {"id": "stars", "type": "twinkle", "target": "站牌星星", "loop": true},
+      {"id": "headlight-fade", "type": "breathe-out", "target": "火车头灯", "loop": false, "duration": 3000},
+      {"id": "heart", "type": "scale-up-glow", "target": "心形光斑", "loop": false, "delay": 4000, "duration": 3000}
+    ],
+    "video_slot": {"id": "V07", "purpose": "学校站到达，心形光斑放大淡出收尾", "duration": 10, "fallback": "static-image"},
+    "caption": "谢谢你，我的朋友！",
+    "music": "童声合唱《火车开啦》尾声，渐弱后哨子声+咔嚓声结尾",
+    "speaker_cue": "学校站到啦！谢谢咔嚓咔嚓号，谢谢所有的朋友！"
+  }
+]

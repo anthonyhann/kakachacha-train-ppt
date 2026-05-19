@@ -1,0 +1,36 @@
+# IDE
+.idea/
+.vscode/
+*.iml
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.env
+venv/
+
+# 中间产物 / 临时文件
+*.log
+*.tmp
+*.bak
+
+# 部署目录中的冗余中文图片目录（英文目录 act01-07 已保留）
+deploy/images/第一幕/
+deploy/images/第二幕/
+deploy/images/第三幕/
+deploy/images/第四幕/
+deploy/images/第五幕/
+deploy/images/第六幕/
+deploy/images/第七幕/
+
+# 大文件（视频单独管理，不纳入 git）
+deploy/video/
+*.mp4
+*.mov
+*.avi
