@@ -431,6 +431,63 @@ html, body { width: 100%; height: 100%; overflow: hidden; background: #0a0a0a; f
   opacity: 0;
 }
 
+/* ===== VIDEO LOADING OVERLAY ===== */
+#video-loading {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0,0,0,0.85);
+  z-index: 10;
+  gap: 20px;
+  transition: opacity 0.4s ease;
+}
+#video-loading.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+.vl-spinner {
+  width: 52px; height: 52px;
+  border: 4px solid rgba(255,255,255,0.15);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.9s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.vl-text {
+  color: rgba(255,255,255,0.85);
+  font-size: 15px;
+  letter-spacing: 0.06em;
+}
+.vl-bar-wrap {
+  width: 200px;
+  height: 4px;
+  background: rgba(255,255,255,0.15);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.vl-bar {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, #60a5fa, #a78bfa);
+  border-radius: 2px;
+  transition: width 0.3s ease;
+}
+.vl-skip {
+  margin-top: 8px;
+  color: rgba(255,255,255,0.4);
+  font-size: 12px;
+  cursor: pointer;
+  padding: 4px 12px;
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 12px;
+  transition: all 0.2s;
+  pointer-events: auto;
+}
+.vl-skip:hover { color: rgba(255,255,255,0.8); border-color: rgba(255,255,255,0.5); }
+
 /* ===== SLIDE-SPECIFIC COLORS ===== */
 #s01 .act-badge { background: rgba(37,99,235,0.85); }
 #s02 .act-badge { background: rgba(29,78,216,0.85); }
@@ -497,15 +554,22 @@ html, body { width: 100%; height: 100%; overflow: hidden; background: #0a0a0a; f
 <!-- STAGE -->
 <div id="stage">
 
-  <!-- ===== S-VIDEO: 开场视频 ===== -->
-  <div class="slide" id="s-video">
-    <video id="intro-video" playsinline preload="auto"
-      style="width:100%;height:100%;object-fit:contain;background:#000">
-      <source src="video/S1.mp4" type="video/mp4">
-    </video>
-    <div class="act-badge" style="background:rgba(220,38,38,0.85)">开场视频</div>
-    <div class="video-controls-hint">▶ 视频播放中 · 点击或按 → 跳过</div>
-  </div>
+<!-- ===== S-VIDEO: 开场视频 ===== -->
+<div class="slide" id="s-video">
+<video id="intro-video" playsinline preload="none"
+  style="width:100%;height:100%;object-fit:contain;background:#000">
+  <source src="video/S1.mp4" type="video/mp4">
+</video>
+<!-- Loading overlay: shown while video is buffering -->
+<div id="video-loading">
+  <div class="vl-spinner"></div>
+  <div class="vl-text" id="vl-text">视频加载中…</div>
+  <div class="vl-bar-wrap"><div class="vl-bar" id="vl-bar"></div></div>
+  <div class="vl-skip" id="vl-skip">跳过视频 →</div>
+</div>
+<div class="act-badge" style="background:rgba(220,38,38,0.85)">开场视频</div>
+<div class="video-controls-hint">▶ 视频播放中 · 点击或按 → 跳过</div>
+</div>
 
   <!-- ===== S01: 始发站 ===== -->
   <div class="slide" id="s01">
@@ -774,8 +838,50 @@ const keyHint = document.getElementById('key-hint');
 
 // Video slide management
 const introVideo = document.getElementById('intro-video');
+const videoLoading = document.getElementById('video-loading');
+const vlBar = document.getElementById('vl-bar');
+const vlText = document.getElementById('vl-text');
+const vlSkip = document.getElementById('vl-skip');
 let videoEnded = false;
+let videoLoadStarted = false;
 
+// Skip button
+vlSkip.addEventListener('click', () => nextSlide());
+
+// Hide loading overlay when video can play
+function hideVideoLoading() {
+  videoLoading.classList.add('hidden');
+}
+function showVideoLoading(msg) {
+  videoLoading.classList.remove('hidden');
+  if (msg) vlText.textContent = msg;
+}
+
+// Update buffer progress bar
+function updateBufferBar() {
+  if (!introVideo.duration) return;
+  const buffered = introVideo.buffered;
+  if (buffered.length > 0) {
+    const pct = (buffered.end(buffered.length - 1) / introVideo.duration) * 100;
+    vlBar.style.width = Math.min(pct, 100) + '%';
+    const sec = Math.round(buffered.end(buffered.length - 1));
+    const total = Math.round(introVideo.duration);
+    vlText.textContent = `视频加载中… ${sec}s / ${total}s`;
+  }
+}
+
+introVideo.addEventListener('progress', updateBufferBar);
+introVideo.addEventListener('canplay', () => {
+  updateBufferBar();
+  hideVideoLoading();
+  introVideo.play().catch(() => {});
+});
+introVideo.addEventListener('waiting', () => {
+  showVideoLoading('缓冲中，请稍候…');
+});
+introVideo.addEventListener('playing', () => {
+  hideVideoLoading();
+});
 introVideo.addEventListener('ended', () => {
   videoEnded = true;
   // Auto-advance to next slide when video ends
@@ -811,8 +917,15 @@ function showSlide(index, animate = true) {
       updateUI();
       // Play video when entering video slide
       if (index === 0) {
-        introVideo.currentTime = 0;
-        introVideo.play().catch(() => {});
+        showVideoLoading('视频加载中…');
+        vlBar.style.width = '0%';
+        if (!videoLoadStarted) {
+          videoLoadStarted = true;
+          introVideo.load(); // trigger lazy load
+        } else {
+          introVideo.currentTime = 0;
+          introVideo.play().catch(() => {});
+        }
       }
       overlay.classList.remove('fade-in');
       setTimeout(() => { transitioning = false; }, 400);
@@ -822,11 +935,22 @@ function showSlide(index, animate = true) {
     slides[index].classList.add('active');
     current = index;
     updateUI();
-    // Auto-play video on first show
+    // Auto-play video on first show (lazy load)
     if (index === 0) {
-      introVideo.play().catch(() => {
-        document.addEventListener('click', () => introVideo.play().catch(() => {}), { once: true });
-      });
+      showVideoLoading('视频加载中…');
+      vlBar.style.width = '0%';
+      if (!videoLoadStarted) {
+        videoLoadStarted = true;
+        introVideo.load(); // trigger lazy load; canplay event will call play()
+        // Fallback: if user hasn't interacted yet, wait for click
+        document.addEventListener('click', () => {
+          if (videoLoading.classList.contains('hidden')) return;
+          introVideo.play().catch(() => {});
+        }, { once: true });
+      } else {
+        introVideo.currentTime = 0;
+        introVideo.play().catch(() => {});
+      }
     }
   }
 }
