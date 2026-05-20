@@ -556,7 +556,7 @@ html, body { width: 100%; height: 100%; overflow: hidden; background: #0a0a0a; f
 
 <!-- ===== S-VIDEO: 开场视频 ===== -->
 <div class="slide" id="s-video">
-<video id="intro-video" playsinline preload="none"
+<video id="intro-video" playsinline preload="auto"
   style="width:100%;height:100%;object-fit:contain;background:#000">
   <source src="video/S1.mp4" type="video/mp4">
 </video>
@@ -843,7 +843,8 @@ const vlBar = document.getElementById('vl-bar');
 const vlText = document.getElementById('vl-text');
 const vlSkip = document.getElementById('vl-skip');
 let videoEnded = false;
-let videoLoadStarted = false;
+let videoLoadStarted = true; // 页面加载时已开始预加载，标记为已启动
+let videoReady = false;      // 视频是否已可播放
 
 // Skip button
 vlSkip.addEventListener('click', () => nextSlide());
@@ -873,8 +874,15 @@ function updateBufferBar() {
 introVideo.addEventListener('progress', updateBufferBar);
 introVideo.addEventListener('canplay', () => {
   updateBufferBar();
-  hideVideoLoading();
-  introVideo.play().catch(() => {});
+  videoReady = true;
+  // 只有在视频幕处于激活状态时才自动播放
+  if (slides[0] && slides[0].classList.contains('active')) {
+    hideVideoLoading();
+    introVideo.play().catch(() => {});
+  } else {
+    // 后台预加载完成，隐藏 loading（下次进入视频幕时直接播放）
+    hideVideoLoading();
+  }
 });
 introVideo.addEventListener('waiting', () => {
   showVideoLoading('缓冲中，请稍候…');
@@ -898,6 +906,12 @@ function startPresentation() {
   }, 600);
 }
 
+// ===== 页面加载完成后立即开始后台预加载视频 =====
+window.addEventListener('load', () => {
+  // 触发视频预加载（preload=auto 已设置，此处显式 load() 确保立即开始）
+  introVideo.load();
+});
+
 function showSlide(index, animate = true) {
   if (transitioning && animate) return;
   if (index < 0 || index >= TOTAL) return;
@@ -917,14 +931,15 @@ function showSlide(index, animate = true) {
       updateUI();
       // Play video when entering video slide
       if (index === 0) {
-        showVideoLoading('视频加载中…');
-        vlBar.style.width = '0%';
-        if (!videoLoadStarted) {
-          videoLoadStarted = true;
-          introVideo.load(); // trigger lazy load
-        } else {
-          introVideo.currentTime = 0;
+        introVideo.currentTime = 0;
+        if (videoReady) {
+          // 已预加载完成，直接播放，无需 loading
+          hideVideoLoading();
           introVideo.play().catch(() => {});
+        } else {
+          // 仍在预加载中，显示进度
+          showVideoLoading('视频加载中…');
+          updateBufferBar();
         }
       }
       overlay.classList.remove('fade-in');
@@ -935,21 +950,17 @@ function showSlide(index, animate = true) {
     slides[index].classList.add('active');
     current = index;
     updateUI();
-    // Auto-play video on first show (lazy load)
+    // Auto-play video on first show
     if (index === 0) {
-      showVideoLoading('视频加载中…');
-      vlBar.style.width = '0%';
-      if (!videoLoadStarted) {
-        videoLoadStarted = true;
-        introVideo.load(); // trigger lazy load; canplay event will call play()
-        // Fallback: if user hasn't interacted yet, wait for click
-        document.addEventListener('click', () => {
-          if (videoLoading.classList.contains('hidden')) return;
-          introVideo.play().catch(() => {});
-        }, { once: true });
-      } else {
-        introVideo.currentTime = 0;
+      introVideo.currentTime = 0;
+      if (videoReady) {
+        // 已预加载完成，直接播放
+        hideVideoLoading();
         introVideo.play().catch(() => {});
+      } else {
+        // 仍在预加载中，显示进度条等待
+        showVideoLoading('视频加载中…');
+        updateBufferBar();
       }
     }
   }
